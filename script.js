@@ -34,7 +34,7 @@ function getRange() {
   start.setDate(now.getDate() - 1);
 
   const end = new Date(now);
-  end.setDate(now.getDate() + 6);
+  end.setDate(now.getDate() + 7);
 
   return { start, end, now };
 }
@@ -144,7 +144,7 @@ function draw() {
         hoverSegment.start.getTime()===seg.start.getTime();
 
       ctx.strokeStyle = done ? "#64748b" : color;
-      ctx.lineWidth = isHover ? 6 : 3;
+      ctx.lineWidth = isHover ? 10 : 3;
 
       // 畫區段線
       ctx.beginPath();
@@ -233,7 +233,7 @@ canvas.addEventListener("click",()=>{
 
 // --- 載入事件
 async function loadEvents() {
-  const res = await fetch("events.json");
+  const res = await fetch("./events.json");
   eventsData = await res.json();
   resizeCanvas();
   draw(); // 先畫一次
