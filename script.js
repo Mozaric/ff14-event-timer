@@ -1,7 +1,7 @@
 const canvas = document.getElementById("timelineCanvas");
 const ctx = canvas.getContext("2d");
 
-let currentTimezone = 9;
+let currentTimezone = 8;
 let eventsData = [];
 let hoverSegment = null;
 
@@ -23,9 +23,11 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 
 function getServerDate() {
+  // currentTimezone = 9 代表 UTC+9
   const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utc + currentTimezone * 60000);
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000; // 轉成 UTC
+  const serverTime = new Date(utc + currentTimezone * 3600 * 1000); // 再加上伺服器時區
+  return serverTime;
 }
 
 function getRange() {
@@ -173,20 +175,20 @@ function draw() {
   // 現在時間紅線 + 顯示 HH:MM
   const nowX = leftPadding + ((now-start)/totalRange)*(canvas.width-leftPadding-rightPadding);
   ctx.strokeStyle = "red";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(nowX,30);
   ctx.lineTo(nowX,canvas.height);
   ctx.stroke();
 
   ctx.fillStyle = "red";
-  ctx.font = "12px sans-serif";
+  ctx.font = "bold 12px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(
     now.getHours().toString().padStart(2,'0') + ':' +
     now.getMinutes().toString().padStart(2,'0'),
     nowX,
-    20
+    27
   );
   ctx.textAlign = "start";
 }
