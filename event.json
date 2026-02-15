@@ -1,0 +1,60 @@
+[
+  {
+    "id": "gold_saucer_mini_cactpot",
+    "name": "金蝶-仙人微彩",
+    "type": "daily",
+    "startTime": "23:00",
+    "endTime": "22:59"
+  },
+  {
+    "id": "daily_roulette",
+    "name": "隨機副本",
+    "type": "daily",
+    "startTime": "23:00",
+    "endTime": "22:59"
+  },
+  {
+    "id": "gc_supply",
+    "name": "軍團-籌備任務",
+    "type": "daily",
+    "startTime": "04:00",
+    "endTime": "03:59"
+  },
+  {
+    "id": "gold_saucer_cactpot",
+    "name": "金蝶-仙人仙彩",
+    "type": "weekly",
+    "startDay": "Sat",
+    "startTime": "21:00",
+    "endDay": "Sat",
+    "endTime": "20:59"
+  },
+  {
+    "id": "gold_saucer_fashion",
+    "name": "金蝶-時尚品鑑",
+    "type": "weekly",
+    "startDay": "Fri",
+    "startTime": "16:00",
+    "endDay": "Tue",
+    "endTime": "15:59"
+  },
+  {
+    "id": "wondrous_tails",
+    "name": "天書奇談",
+    "type": "weekly",
+    "startDay": "Tue",
+    "startTime": "16:00",
+    "endDay": "Tue",
+    "endTime": "15:59"
+  },
+  {
+    "id": "challenge_log",
+    "name": "挑戰筆記",
+    "type": "weekly",
+    "startDay": "Tue",
+    "startTime": "16:00",
+    "endDay": "Tue",
+    "endTime": "15:59"
+  }
+]
+
