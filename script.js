@@ -6,7 +6,7 @@ let eventsData = [];
 let hoverSegment = null;
 
 const rowHeight = 70;
-const leftPadding = 200;
+const leftPadding = 300;
 const rightPadding = 40;
 
 const categoryColors = {
@@ -129,7 +129,7 @@ function draw() {
   // =========================
   eventsData.forEach((event, index) => {
     const y = index * rowHeight + 60;
-    const lineStartX = 110;
+    const lineStartX = leftPadding - 90;
     ctx.strokeStyle = "#475569"; // 細線顏色
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -155,8 +155,6 @@ function draw() {
       segments = getDailySegments(event, start, end);
     } else if (event.type === "weekly") {
       segments = getWeeklySegments(event, start, end);
-    } else if (event.type === "cooldown") {
-      segments = getCooldownSegments(event, start, end);
     }
 
     segments.forEach(seg => {

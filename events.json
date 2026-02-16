@@ -21,6 +21,16 @@
     "endTime": "03:59"
   },
   {
+    "id": "adventurer_squadrons_missions",
+    "name": "冒險者分隊-訓練與任務",
+    "type": "cooldown"
+  },
+  {
+    "id": "retainer_exploration",
+    "name": "雇員-冒險",
+    "type": "cooldown"
+  },
+  {
     "id": "gold_saucer_cactpot",
     "name": "金蝶-仙人仙彩",
     "type": "weekly",
