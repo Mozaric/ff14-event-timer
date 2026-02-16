@@ -5,7 +5,7 @@ let currentTimezone = 8;
 let eventsData = [];
 let hoverSegment = null;
 
-const rowHeight = 70;
+const rowHeight = 60;
 const leftPadding = 300;
 const rightPadding = 40;
 
@@ -39,7 +39,8 @@ function getRange() {
   start.setHours(0, 0, 0, 0); // 設定成 00:00
 
   const end = new Date(now);
-  end.setDate(now.getDate() + 7);
+  end.setDate(now.getDate() + 8);
+  end.setHours(0, 0, 0, 0); // 設定成 00:00
 
   return { start, end, now };
 }
@@ -47,18 +48,36 @@ function getRange() {
 // --- 取得每日區段
 function getDailySegments(event, rangeStart, rangeEnd) {
   const segments = [];
-  const [h,m] = event.startTime.split(":").map(Number);
 
+  const [sh, sm] = event.startTime.split(":").map(Number);
+  const [eh, em] = event.endTime.split(":").map(Number);
+
+  // 找到 rangeStart 當天的 startTime
   let cursor = new Date(rangeStart);
-  cursor.setHours(h,m,0,0);
+  cursor.setHours(sh, sm, 0, 0);
 
-  while (cursor <= rangeEnd) {
+  // 如果這個 startTime 在 rangeStart 之後
+  // 代表我們少算了一段，要往前一天
+  if (cursor > rangeStart) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  while (cursor < rangeEnd) {
     const start = new Date(cursor);
-    const end = new Date(cursor);
-    end.setDate(end.getDate()+1);
 
-    segments.push({start,end});
-    cursor.setDate(cursor.getDate()+1);
+    const end = new Date(cursor);
+    end.setDate(end.getDate() + 1);
+    end.setHours(eh, em, 0, 0);
+
+    // 判斷是否有 overlap
+    if (end > rangeStart && start < rangeEnd) {
+      segments.push({
+        start: new Date(Math.max(start, rangeStart)),
+        end: new Date(Math.min(end, rangeEnd))
+      });
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
   }
 
   return segments;
@@ -66,26 +85,66 @@ function getDailySegments(event, rangeStart, rangeEnd) {
 
 // --- 取得每週區段
 function getWeeklySegments(event, rangeStart, rangeEnd) {
-  const map = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+  const dayMap = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
   const segments = [];
-  const [h,m] = event.startTime.split(":").map(Number);
 
+  const startDay = dayMap[event.startDay];
+  const endDay = dayMap[event.endDay];
+
+  const [startH, startM] = event.startTime.split(":").map(Number);
+  const [endH, endM] = event.endTime.split(":").map(Number);
+
+  // 從 rangeStart 前一週開始找，避免漏掉跨週事件
   let cursor = new Date(rangeStart);
-  cursor.setHours(h,m,0,0);
+  cursor.setDate(cursor.getDate() - 7);
+  cursor.setHours(0,0,0,0);
 
-  while (cursor.getDay() !== map[event.startDay]) {
-    cursor.setDate(cursor.getDate()+1);
+  // 找到第一個 startDay
+  while (cursor.getDay() !== startDay) {
+    cursor.setDate(cursor.getDate() + 1);
   }
 
   while (cursor <= rangeEnd) {
-    const start = new Date(cursor);
-    const end = new Date(cursor);
-    end.setDate(end.getDate()+7);
 
-    if (start <= rangeEnd)
-      segments.push({start,end});
+    // === 計算該週 start ===
+    const eventStart = new Date(cursor);
+    eventStart.setHours(startH, startM, 0, 0);
 
-    cursor.setDate(cursor.getDate()+7);
+    // === 計算該週 end ===
+    const eventEnd = new Date(eventStart);
+
+    let dayDiff = endDay - startDay;
+
+    // 🔥 核心修正
+    if (
+      dayDiff < 0 ||
+      (dayDiff === 0 && (endH < startH || (endH === startH && endM <= startM)))
+    ) {
+      dayDiff += 7;
+    }
+
+    eventEnd.setDate(eventEnd.getDate() + dayDiff);
+    eventEnd.setHours(endH, endM, 0, 0);
+
+    // ========= overlap 判斷 =========
+    if (eventEnd > rangeStart && eventStart < rangeEnd) {
+
+      const displayStart = eventStart < rangeStart
+        ? new Date(rangeStart)
+        : eventStart;
+
+      const displayEnd = eventEnd > rangeEnd
+        ? new Date(rangeEnd)
+        : eventEnd;
+
+      segments.push({
+        start: displayStart,
+        end: displayEnd,
+        originalStart: eventStart
+      });
+    }
+
+    cursor.setDate(cursor.getDate() + 7);
   }
 
   return segments;
@@ -95,6 +154,8 @@ function getWeeklySegments(event, rangeStart, rangeEnd) {
 function drawScales(start,end,totalRange) {
   ctx.fillStyle = "#94a3b8";
   ctx.font = "10px sans-serif";
+
+  const weekMap = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   let cursor = new Date(start);
   cursor.setHours(0,0,0,0);
@@ -110,7 +171,11 @@ function drawScales(start,end,totalRange) {
     ctx.lineTo(x,canvas.height);
     ctx.stroke();
 
-    ctx.fillText(`${cursor.getMonth()+1}/${cursor.getDate()}`, x+2, 15);
+    const month = cursor.getMonth()+1;
+    const date = cursor.getDate();
+    const weekday = weekMap[cursor.getDay()];
+
+    ctx.fillText(`${month}/${date} ${weekday}`, x+2, 15);
 
     cursor.setDate(cursor.getDate()+1);
   }
@@ -160,7 +225,7 @@ function draw() {
       segments = getWeeklySegments(event, start, end);
     }
 
-    segments.forEach(seg => {
+    segments.forEach((seg, segIndex) => {
       const x1 = leftPadding + ((seg.start - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
       const x2 = leftPadding + ((seg.end - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
 
@@ -173,6 +238,13 @@ function draw() {
 
       // 畫區段線
       ctx.strokeStyle = done ? "#64748b" : color;
+      // if (done) {
+      //   ctx.strokeStyle = "#64748b";
+      //   ctx.strokeStyle = segIndex % 2 === 0 ? "#AAAAAA" : "#494949";
+      // } else {
+      //   ctx.strokeStyle = color;
+      //   ctx.strokeStyle = segIndex % 2 === 0 ? "#00CC16" : "#A300CC";
+      // }
       ctx.lineWidth = isHover ? 10 : 3;
       ctx.beginPath();
       ctx.moveTo(x1, y);
@@ -190,16 +262,16 @@ function draw() {
       ctx.arc(x2, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // hover 顯示時間
-      if (isHover) {
-        ctx.fillStyle = "white";
-        ctx.font = "12px sans-serif";
-        ctx.fillText(
-          `${seg.start.toLocaleString()} ~ ${seg.end.toLocaleString()}`,
-          x1,
-          y - 15
-        );
-      }
+      // // hover 顯示時間
+      // if (isHover) {
+      //   ctx.fillStyle = "white";
+      //   ctx.font = "12px sans-serif";
+      //   ctx.fillText(
+      //     `${seg.start.toLocaleString()} ~ ${seg.end.toLocaleString()}`,
+      //     x1,
+      //     y - 15
+      //   );
+      // }
     });
   });
 
