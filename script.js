@@ -113,80 +113,113 @@ function drawScales(start,end,totalRange) {
   }
 }
 
-// --- 畫 Canvas
 function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const {start,end,now} = getRange();
+  const { start, end, now } = getRange();
   const totalRange = end - start;
 
-  drawScales(start,end,totalRange);
+  // =========================
+  // ① 日期垂直刻度線
+  // =========================
+  drawScales(start, end, totalRange);
 
-  eventsData.forEach((event,index)=>{
-    const y = index*rowHeight + 60;
+  // =========================
+  // ② 橫向基準細線（對齊名字與 timeline）
+  // =========================
+  eventsData.forEach((event, index) => {
+    const y = index * rowHeight + 60;
+    const lineStartX = 110;
+    ctx.strokeStyle = "#475569"; // 細線顏色
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(lineStartX, y);
+    ctx.lineTo(canvas.width - rightPadding, y);
+    ctx.stroke();
+  });
+
+  // =========================
+  // ③ 畫事件 timeline
+  // =========================
+  eventsData.forEach((event, index) => {
+    const y = index * rowHeight + 60;
     const color = categoryColors[event.category] || "#38bdf8";
 
+    // 畫事件名稱
     ctx.fillStyle = "white";
     ctx.font = "14px sans-serif";
     ctx.fillText(event.name, 10, y);
 
-    const segments = event.type==="daily"
-      ? getDailySegments(event,start,end)
-      : getWeeklySegments(event,start,end);
+    let segments = [];
+    if (event.type === "daily") {
+      segments = getDailySegments(event, start, end);
+    } else if (event.type === "weekly") {
+      segments = getWeeklySegments(event, start, end);
+    } else if (event.type === "cooldown") {
+      segments = getCooldownSegments(event, start, end);
+    }
 
-    segments.forEach(seg=>{
-      const x1 = leftPadding + ((seg.start-start)/totalRange)*(canvas.width-leftPadding-rightPadding);
-      const x2 = leftPadding + ((seg.end-start)/totalRange)*(canvas.width-leftPadding-rightPadding);
+    segments.forEach(seg => {
+      const x1 = leftPadding + ((seg.start - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
+      const x2 = leftPadding + ((seg.end - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
 
       const key = `${event.id}_${seg.start.getTime()}`;
       const done = localStorage.getItem(key) === "true";
 
       const isHover = hoverSegment &&
-        hoverSegment.eventId===event.id &&
-        hoverSegment.start.getTime()===seg.start.getTime();
-
-      ctx.strokeStyle = done ? "#64748b" : color;
-      ctx.lineWidth = isHover ? 10 : 3;
+        hoverSegment.eventId === event.id &&
+        hoverSegment.start.getTime() === seg.start.getTime();
 
       // 畫區段線
+      ctx.strokeStyle = done ? "#64748b" : color;
+      ctx.lineWidth = isHover ? 10 : 3;
       ctx.beginPath();
-      ctx.moveTo(x1,y);
-      ctx.lineTo(x2,y);
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
       ctx.stroke();
 
-      // start dot
+      // 起點圓點
       ctx.fillStyle = done ? "#64748b" : color;
       ctx.beginPath();
-      ctx.arc(x1,y,6,0,Math.PI*2);
+      ctx.arc(x1, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // end dot
+      // 終點圓點
       ctx.beginPath();
-      ctx.arc(x2,y,6,0,Math.PI*2);
+      ctx.arc(x2, y, 6, 0, Math.PI * 2);
       ctx.fill();
 
+      // hover 顯示時間
       if (isHover) {
         ctx.fillStyle = "white";
-        ctx.fillText(`${seg.start.toLocaleString()} ~ ${seg.end.toLocaleString()}`, x1, y-15);
+        ctx.font = "12px sans-serif";
+        ctx.fillText(
+          `${seg.start.toLocaleString()} ~ ${seg.end.toLocaleString()}`,
+          x1,
+          y - 15
+        );
       }
     });
   });
 
-  // 現在時間紅線 + 顯示 HH:MM
-  const nowX = leftPadding + ((now-start)/totalRange)*(canvas.width-leftPadding-rightPadding);
+  // =========================
+  // ④ 現在時間紅線 + HH:MM
+  // =========================
+  const nowX = leftPadding + ((now - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
+
   ctx.strokeStyle = "red";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(nowX,30);
-  ctx.lineTo(nowX,canvas.height);
+  ctx.moveTo(nowX, 30);
+  ctx.lineTo(nowX, canvas.height);
   ctx.stroke();
 
   ctx.fillStyle = "red";
   ctx.font = "bold 12px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(
-    now.getHours().toString().padStart(2,'0') + ':' +
-    now.getMinutes().toString().padStart(2,'0'),
+    now.getHours().toString().padStart(2, '0') + ':' +
+    now.getMinutes().toString().padStart(2, '0'),
     nowX,
     27
   );
