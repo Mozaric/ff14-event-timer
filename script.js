@@ -32,8 +32,11 @@ function getServerDate() {
 
 function getRange() {
   const now = getServerDate();
+
+  // 前一天
   const start = new Date(now);
   start.setDate(now.getDate() - 1);
+  start.setHours(0, 0, 0, 0); // 設定成 00:00
 
   const end = new Date(now);
   end.setDate(now.getDate() + 7);
@@ -129,7 +132,7 @@ function draw() {
   // =========================
   eventsData.forEach((event, index) => {
     const y = index * rowHeight + 60;
-    const lineStartX = leftPadding - 90;
+    const lineStartX = leftPadding - 10;
     ctx.strokeStyle = "#475569"; // 細線顏色
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -236,6 +239,7 @@ canvas.addEventListener("mousemove",(e)=>{
   hoverSegment = null;
 
   eventsData.forEach((event,index)=>{
+    if (event.type !== "daily" && event.type !== "weekly") return;
     const y = index*rowHeight + 60;
     const segments = event.type==="daily"
       ? getDailySegments(event,start,end)
