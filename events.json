@@ -23,12 +23,16 @@
   {
     "id": "adventurer_squadrons_missions",
     "name": "冒險者分隊-訓練與任務",
-    "type": "cooldown"
+    "type": "daily",
+    "startTime": "23:00",
+    "endTime": "22:59"
   },
   {
     "id": "retainer_exploration",
     "name": "雇員-冒險",
-    "type": "cooldown"
+    "type": "daily",
+    "startTime": "23:00",
+    "endTime": "22:59"
   },
   {
     "id": "gold_saucer_cactpot",
