@@ -229,7 +229,7 @@ function draw() {
       const x1 = leftPadding + ((seg.start - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
       const x2 = leftPadding + ((seg.end - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
 
-      const key = `${event.id}_${seg.start.getTime()}`;
+      const key = `${event.id}_${seg.end.getTime()}`;
       const done = localStorage.getItem(key) === "true";
 
       const isHover = hoverSegment &&
@@ -333,7 +333,7 @@ canvas.addEventListener("mousemove",(e)=>{
 // --- 點擊標記完成
 canvas.addEventListener("click",()=>{
   if (hoverSegment) {
-    const key = `${hoverSegment.eventId}_${hoverSegment.start.getTime()}`;
+    const key = `${hoverSegment.eventId}_${hoverSegment.end.getTime()}`;
     if (localStorage.getItem(key)) localStorage.removeItem(key);
     else localStorage.setItem(key,"true");
     draw(); // 立即更新線條顏色
