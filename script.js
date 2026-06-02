@@ -73,7 +73,8 @@ function getDailySegments(event, rangeStart, rangeEnd) {
     if (end > rangeStart && start < rangeEnd) {
       segments.push({
         start: new Date(Math.max(start, rangeStart)),
-        end: new Date(Math.min(end, rangeEnd))
+        end: new Date(Math.min(end, rangeEnd)),
+        originalStart: new Date(start)
       });
     }
 
@@ -229,12 +230,12 @@ function draw() {
       const x1 = leftPadding + ((seg.start - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
       const x2 = leftPadding + ((seg.end - start) / totalRange) * (canvas.width - leftPadding - rightPadding);
 
-      const key = `${event.id}_${seg.start.getTime()}`;
+      const key = `${event.id}_${seg.originalStart.getTime()}`;
       const done = localStorage.getItem(key) === "true";
 
       const isHover = hoverSegment &&
         hoverSegment.eventId === event.id &&
-        hoverSegment.start.getTime() === seg.start.getTime();
+        hoverSegment.originalStart.getTime() === seg.originalStart.getTime();
 
       // 畫區段線
       ctx.strokeStyle = done ? "#64748b" : color;
@@ -322,7 +323,7 @@ canvas.addEventListener("mousemove",(e)=>{
       const x2 = leftPadding + ((seg.end-start)/totalRange)*(canvas.width-leftPadding-rightPadding);
 
       if (mouseX>=x1 && mouseX<=x2 && Math.abs(mouseY-y)<10) {
-        hoverSegment={eventId:event.id,start:seg.start};
+        hoverSegment={eventId:event.id,originalStart:seg.originalStart};
       }
     });
   });
@@ -333,7 +334,7 @@ canvas.addEventListener("mousemove",(e)=>{
 // --- 點擊標記完成
 canvas.addEventListener("click",()=>{
   if (hoverSegment) {
-    const key = `${hoverSegment.eventId}_${hoverSegment.start.getTime()}`;
+    const key = `${hoverSegment.eventId}_${hoverSegment.originalStart.getTime()}`;
     if (localStorage.getItem(key)) localStorage.removeItem(key);
     else localStorage.setItem(key,"true");
     draw(); // 立即更新線條顏色
