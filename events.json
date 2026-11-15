@@ -8,7 +8,7 @@
   },
   {
     "id": "Duty_Roulette",
-    "name": "隨機副本",
+    "name": "隨機任務",
     "type": "daily",
     "startTime": "23:00",
     "endTime": "22:59"
