@@ -1,42 +1,35 @@
 [
   {
-    "id": "gold_saucer_mini_cactpot",
-    "name": "金蝶-仙人微彩",
+    "id": "The_Gold_Saucer_Mini_Cactpot",
+    "name": "金蝶遊樂園-仙人微彩",
     "type": "daily",
     "startTime": "23:00",
     "endTime": "22:59"
   },
   {
-    "id": "daily_roulette",
+    "id": "Duty_Roulette",
     "name": "隨機副本",
     "type": "daily",
     "startTime": "23:00",
     "endTime": "22:59"
   },
   {
-    "id": "gc_supply",
-    "name": "軍團-籌備任務",
+    "id": "Grand_Company_Grand_Company_Supply_and_Provisioning_Missions",
+    "name": "大國防聯軍-籌備軍需品與補給品",
     "type": "daily",
     "startTime": "04:00",
     "endTime": "03:59"
   },
   {
-    "id": "adventurer_squadrons_missions",
-    "name": "冒險者分隊-訓練與任務",
+    "id": "Retainer_Retainer_Ventures",
+    "name": "雇員-雇員探險",
     "type": "daily",
     "startTime": "23:00",
     "endTime": "22:59"
   },
   {
-    "id": "retainer_exploration",
-    "name": "雇員-冒險",
-    "type": "daily",
-    "startTime": "23:00",
-    "endTime": "22:59"
-  },
-  {
-    "id": "gold_saucer_cactpot",
-    "name": "金蝶-仙人仙彩",
+    "id": "The_Gold_Saucer_Jumbo_Cactpot",
+    "name": "金蝶遊樂園-仙人仙彩",
     "type": "weekly",
     "startDay": "Sat",
     "startTime": "21:00",
@@ -44,8 +37,26 @@
     "endTime": "20:59"
   },
   {
-    "id": "gold_saucer_fashion",
-    "name": "金蝶-時尚品鑑",
+    "id": "Adventurer_Squadrons_Squadron_Missions",
+    "name": "冒險者分隊-分隊任務",
+    "type": "weekly",
+    "startDay": "Tue",
+    "startTime": "16:00",
+    "endDay": "Tue",
+    "endTime": "15:59"
+  },
+  {
+    "id": "Custom_Deliveries",
+    "name": "老主顧交易",
+    "type": "weekly",
+    "startDay": "Tue",
+    "startTime": "16:00",
+    "endDay": "Tue",
+    "endTime": "15:59"
+  },
+  {
+    "id": "The_Gold_Saucer_Fashion_Report",
+    "name": "金蝶遊樂園-時尚品鑑",
     "type": "weekly",
     "startDay": "Fri",
     "startTime": "16:00",
@@ -53,7 +64,7 @@
     "endTime": "15:59"
   },
   {
-    "id": "wondrous_tails",
+    "id": "Wondrous_Tails",
     "name": "天書奇談",
     "type": "weekly",
     "startDay": "Tue",
@@ -62,7 +73,7 @@
     "endTime": "15:59"
   },
   {
-    "id": "challenge_log",
+    "id": "Challenge_Log",
     "name": "挑戰筆記",
     "type": "weekly",
     "startDay": "Tue",
@@ -71,4 +82,3 @@
     "endTime": "15:59"
   }
 ]
-
